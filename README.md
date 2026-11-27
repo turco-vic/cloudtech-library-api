@@ -200,3 +200,82 @@ Resposta (200 OK):
   ]
 }
 ```
+
+## Como executar
+
+Pré-requisitos: Java 21 e Maven instalados.
+
+A aplicação utiliza a porta definida na variável de ambiente `PORT` e, caso ela não exista, a porta 8080 (`server.port=${PORT:8080}` no arquivo `application.properties`). Essa configuração permite que a plataforma Railway defina a porta automaticamente.
+
+### Com o Maven
+
+Na pasta raiz do projeto, execute:
+
+```
+mvn spring-boot:run
+```
+
+A aplicação ficará disponível em `http://localhost:8080`.
+
+### Pelo arquivo .jar
+
+Para gerar o arquivo .jar (este comando também executa os testes):
+
+```
+mvn package
+```
+
+Para executar o arquivo gerado:
+
+```
+java -jar target/biblioteca-api-1.0.0.jar
+```
+
+## Como testar
+
+Os testes automatizados foram desenvolvidos com JUnit 5 e MockMvc, na classe `src/test/java/com/cloudtech/biblioteca/LivroControllerTest.java`. Para executá-los:
+
+```
+mvn test
+```
+
+Cada teste é executado com o contexto da aplicação recriado (`@DirtiesContext`), ou seja, sempre começa com a lista de livros vazia e com o próximo ID igual a 1.
+
+| Nº | Teste                                     | O que verifica |
+|----|-------------------------------------------|----------------|
+| 1  | `paginaInicialDeveRetornar200`            | `GET /` retorna HTTP 200 e a mensagem de boas-vindas |
+| 2  | `listagemDeLivrosDeveRetornarListaE200`   | `GET /livros` retorna HTTP 200 e uma lista com o livro cadastrado |
+| 3  | `cadastroDeLivroDeveRetornar201`          | `POST /livros/cadastrar` cadastra o livro, gera o ID 1 e retorna HTTP 201 |
+| 4  | `consultaPorIdDeveRetornarDadosDoLivro`   | `GET /livros/1` retorna HTTP 200 e todos os dados do livro |
+| 5  | `alteracaoDeLivroDeveAtualizarInformacoes`| `PUT /livros/alterar/1` retorna HTTP 200, atualiza os dados, mantém o ID e a alteração aparece na consulta seguinte |
+| 6  | `consultaDeIdInexistenteDeveRetornar404`  | `GET /livros/999` retorna HTTP 404 |
+| 7  | `documentacaoDeveRetornarEndpoints`       | `GET /documentacao` retorna HTTP 200 e os 6 endpoints da aplicação |
+
+Os endpoints também podem ser testados manualmente com a extensão Thunder Client do Visual Studio Code, utilizando os exemplos de requisição da seção [Endpoints](#endpoints).
+
+## Fluxo de branches
+
+O repositório utiliza as seguintes branches:
+
+| Branch                 | Finalidade |
+|------------------------|------------|
+| `main`                 | Versão estável da aplicação |
+| `develop`              | Integração das funcionalidades em desenvolvimento |
+| `feature/livros`       | Cadastro, listagem, consulta e alteração de livros |
+| `feature/documentacao` | Endpoint `/documentacao` |
+| `feature/testes`       | Testes automatizados com JUnit 5 e MockMvc |
+| `feature/pipeline`     | Workflow de integração contínua no GitHub Actions |
+| `feature/readme`       | Documentação do projeto neste README |
+
+Cada funcionalidade foi desenvolvida em uma branch `feature/*` criada a partir da `develop` atualizada. Ao final de cada funcionalidade, foi aberto um pull request para a `develop`, integrado por merge commit. Após a conclusão de todas as funcionalidades, a `develop` foi integrada à `main` por meio de um pull request.
+
+## Pipeline de integração contínua
+
+O workflow `CI - Build e Testes`, definido em `.github/workflows/pipeline.yml`, é executado automaticamente no GitHub Actions a cada push enviado ao repositório, em qualquer branch. Suas etapas são:
+
+1. **Baixar o código-fonte:** obtém o código do repositório (`actions/checkout`).
+2. **Configurar o Java 21:** prepara o ambiente com o Java 21 da distribuição Temurin (`actions/setup-java`).
+3. **Instalar dependências, compilar, executar os testes e gerar o .jar:** executa `mvn -B package`, que baixa as dependências do `pom.xml`, compila a aplicação, executa os testes automatizados e gera o arquivo `biblioteca-api-1.0.0.jar`. Caso algum teste falhe, o pipeline é interrompido.
+4. **Publicar o .jar gerado:** disponibiliza o arquivo .jar como artefato `biblioteca-api-jar`, que pode ser baixado na página da execução (`actions/upload-artifact`).
+
+O resultado de cada execução pode ser consultado na aba **Actions** do repositório no GitHub.
