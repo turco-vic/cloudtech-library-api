@@ -1,7 +1,11 @@
 package com.cloudtech.biblioteca.controller;
 
 import com.cloudtech.biblioteca.models.Livro;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -25,5 +29,13 @@ public class LivroController {
     @GetMapping("/livros")
     public List<Livro> listarLivros() {
         return livros;
+    }
+
+    @PostMapping("/livros/cadastrar")
+    public ResponseEntity<Livro> cadastrarLivro(@RequestBody Livro livro) {
+        livro.setId(proximoId);
+        proximoId++;
+        livros.add(livro);
+        return ResponseEntity.status(HttpStatus.CREATED).body(livro);
     }
 }
