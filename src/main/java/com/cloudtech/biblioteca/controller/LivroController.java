@@ -66,4 +66,19 @@ public class LivroController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/documentacao")
+    public Map<String, List<String>> documentacao() {
+        List<String> endpoints = new ArrayList<>();
+        endpoints.add("/");
+        endpoints.add("/livros");
+        endpoints.add("/livros/cadastrar");
+        endpoints.add("/livros/alterar/{id}");
+        endpoints.add("/livros/{id}");
+        endpoints.add("/documentacao");
+
+        Map<String, List<String>> resposta = new LinkedHashMap<>();
+        resposta.put("endpoints", endpoints);
+        return resposta;
+    }
 }
