@@ -52,4 +52,34 @@ class LivroControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].titulo").value("Banco de Dados para Iniciantes"));
     }
+
+    @Test
+    void cadastroDeLivroDeveRetornar201() throws Exception {
+        mockMvc.perform(post("/livros/cadastrar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(livroJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.titulo").value("Banco de Dados para Iniciantes"))
+                .andExpect(jsonPath("$.autor").value("Maria Souza"))
+                .andExpect(jsonPath("$.status").value("Disponível"));
+    }
+
+    @Test
+    void consultaPorIdDeveRetornarDadosDoLivro() throws Exception {
+        mockMvc.perform(post("/livros/cadastrar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(livroJson))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/livros/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.titulo").value("Banco de Dados para Iniciantes"))
+                .andExpect(jsonPath("$.autor").value("Maria Souza"))
+                .andExpect(jsonPath("$.editora").value("EduTech"))
+                .andExpect(jsonPath("$.ano").value(2023))
+                .andExpect(jsonPath("$.categoria").value("Informática"))
+                .andExpect(jsonPath("$.status").value("Disponível"));
+    }
 }
