@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +45,22 @@ public class LivroController {
     public ResponseEntity<Livro> buscarLivroPorId(@PathVariable Long id) {
         for (Livro livro : livros) {
             if (livro.getId().equals(id)) {
+                return ResponseEntity.ok(livro);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/livros/alterar/{id}")
+    public ResponseEntity<Livro> alterarLivro(@PathVariable Long id, @RequestBody Livro dadosNovos) {
+        for (Livro livro : livros) {
+            if (livro.getId().equals(id)) {
+                livro.setTitulo(dadosNovos.getTitulo());
+                livro.setAutor(dadosNovos.getAutor());
+                livro.setEditora(dadosNovos.getEditora());
+                livro.setAno(dadosNovos.getAno());
+                livro.setCategoria(dadosNovos.getCategoria());
+                livro.setStatus(dadosNovos.getStatus());
                 return ResponseEntity.ok(livro);
             }
         }
