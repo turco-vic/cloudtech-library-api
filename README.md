@@ -52,3 +52,151 @@ cloudtech-library-api/
 | `ano`       | int    | Ano de publicação                           |
 | `categoria` | String | Categoria do livro                          |
 | `status`    | String | Situação do livro: `Disponível` ou `Emprestado` |
+
+## Endpoints
+
+| Método | Rota                    | Descrição                                   | Códigos de resposta |
+|--------|-------------------------|---------------------------------------------|---------------------|
+| GET    | `/`                     | Exibe a mensagem de boas-vindas             | 200 OK              |
+| GET    | `/livros`               | Lista todos os livros cadastrados           | 200 OK              |
+| POST   | `/livros/cadastrar`     | Cadastra um novo livro                      | 201 Created         |
+| PUT    | `/livros/alterar/{id}`  | Atualiza as informações de um livro         | 200 OK, 404 Not Found |
+| GET    | `/livros/{id}`          | Consulta um livro pelo ID                   | 200 OK, 404 Not Found |
+| GET    | `/documentacao`         | Apresenta a lista de endpoints disponíveis  | 200 OK              |
+
+Todas as requisições e respostas utilizam o formato JSON. Nas requisições com corpo (POST e PUT), deve ser enviado o cabeçalho `Content-Type: application/json`.
+
+### GET /
+
+Retorna a mensagem de boas-vindas ao sistema.
+
+Resposta (200 OK):
+
+```json
+{
+  "mensagem": "Bem-vindo ao sistema de gerenciamento da Biblioteca CloudTech Solutions"
+}
+```
+
+### GET /livros
+
+Retorna a lista de livros cadastrados. Caso nenhum livro tenha sido cadastrado, retorna uma lista vazia (`[]`).
+
+Resposta (200 OK):
+
+```json
+[
+  {
+    "id": 1,
+    "titulo": "Banco de Dados para Iniciantes",
+    "autor": "Maria Souza",
+    "editora": "EduTech",
+    "ano": 2023,
+    "categoria": "Informática",
+    "status": "Disponível"
+  }
+]
+```
+
+### POST /livros/cadastrar
+
+Cadastra um novo livro. O `id` não deve ser enviado, pois é gerado automaticamente pela aplicação, iniciando em 1.
+
+Requisição:
+
+```json
+{
+  "titulo": "Banco de Dados para Iniciantes",
+  "autor": "Maria Souza",
+  "editora": "EduTech",
+  "ano": 2023,
+  "categoria": "Informática",
+  "status": "Disponível"
+}
+```
+
+Resposta (201 Created), com o livro cadastrado e o `id` gerado:
+
+```json
+{
+  "id": 1,
+  "titulo": "Banco de Dados para Iniciantes",
+  "autor": "Maria Souza",
+  "editora": "EduTech",
+  "ano": 2023,
+  "categoria": "Informática",
+  "status": "Disponível"
+}
+```
+
+### PUT /livros/alterar/{id}
+
+Substitui o título, o autor, a editora, o ano, a categoria e o status do livro informado na URL. O `id` do livro é mantido; caso um `id` seja enviado no corpo da requisição, ele é ignorado.
+
+Requisição para `PUT /livros/alterar/1`:
+
+```json
+{
+  "titulo": "Banco de Dados Essencial",
+  "autor": "Maria Souza",
+  "editora": "EduTech",
+  "ano": 2024,
+  "categoria": "Banco de Dados",
+  "status": "Emprestado"
+}
+```
+
+Resposta (200 OK), com o livro atualizado:
+
+```json
+{
+  "id": 1,
+  "titulo": "Banco de Dados Essencial",
+  "autor": "Maria Souza",
+  "editora": "EduTech",
+  "ano": 2024,
+  "categoria": "Banco de Dados",
+  "status": "Emprestado"
+}
+```
+
+Caso não exista livro com o ID informado, a resposta é 404 Not Found, sem corpo.
+
+### GET /livros/{id}
+
+Retorna os dados do livro com o ID informado.
+
+Resposta para `GET /livros/1` (200 OK):
+
+```json
+{
+  "id": 1,
+  "titulo": "Banco de Dados para Iniciantes",
+  "autor": "Maria Souza",
+  "editora": "EduTech",
+  "ano": 2023,
+  "categoria": "Informática",
+  "status": "Disponível"
+}
+```
+
+Caso não exista livro com o ID informado, a resposta é 404 Not Found, sem corpo.
+
+### GET /documentacao
+
+Retorna a lista de endpoints disponíveis na aplicação.
+
+Resposta (200 OK):
+
+```json
+{
+  "endpoints": [
+    "/",
+    "/livros",
+    "/livros/cadastrar",
+    "/livros/alterar/{id}",
+    "/livros/{id}",
+    "/documentacao"
+  ]
+}
+```
